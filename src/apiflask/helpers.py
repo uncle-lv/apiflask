@@ -131,7 +131,11 @@ def pagination_builder(
         **kwargs: Additional keyword arguments that passed to the
             `url_for` function when generate the page-related URLs.
 
+    *Version Added: 0.6.0*
+
     *Version Changed: 3.1.0*
+
+    - Add `schema_type` parameter.
     """
     endpoint: str | None = request.endpoint
     per_page: int = pagination.per_page
