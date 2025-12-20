@@ -1,8 +1,10 @@
 import io
+import typing as t
 from importlib.metadata import version
 
 import pytest
 from packaging.version import parse
+from pydantic import AfterValidator
 from pydantic import BaseModel
 from werkzeug.datastructures import FileStorage
 
@@ -11,6 +13,8 @@ from .schemas import FilesList
 from apiflask import Schema
 from apiflask.fields import Config
 from apiflask.fields import UploadFile
+from apiflask.validators import check_file_size
+from apiflask.validators import check_file_type
 
 
 def test_file_field(app, client):
@@ -176,3 +180,75 @@ def test_file_model(app, client):
     )
     assert rv.status_code == 422
     assert rv.json['detail']['files']['image'] == ['Input should be an instance of FileStorage']
+
+
+def test_file_model_filetype_validator(app, client):
+    class Files(BaseModel):
+        image: t.Annotated[UploadFile, AfterValidator(check_file_type(['.png']))]
+
+    @app.post('/')
+    @app.input(Files, location='files')
+    def index(files_data: Files):
+        data = {}
+        if 'image' in files_data.model_dump() and isinstance(files_data.image, FileStorage):
+            data['png'] = True
+        return data
+
+    rv = client.post(
+        '/',
+        data={
+            'image': (io.BytesIO(b'test'), 'test.png'),
+        },
+        content_type='multipart/form-data',
+    )
+    assert rv.status_code == 200
+    assert rv.json == {'png': True}
+
+    rv = client.post(
+        '/',
+        data={
+            'image': (io.BytesIO(b'test'), 'test.jpg'),
+        },
+        content_type='multipart/form-data',
+    )
+
+    assert rv.status_code == 422
+    assert rv.json['detail']['files']['image'] == [
+        'Value error, Not an allowed file type. Allowed file types: [.png]'
+    ]
+
+
+def test_file_model_filesize_validator(app, client):
+    class Files(BaseModel):
+        image: t.Annotated[UploadFile, AfterValidator(check_file_size(min='1 KiB'))]
+
+    @app.post('/')
+    @app.input(Files, location='files')
+    def index(files_data: Files):
+        data = {}
+        if 'image' in files_data.model_dump() and isinstance(files_data.image, FileStorage):
+            data['1 KiB'] = True
+        return data
+
+    rv = client.post(
+        '/',
+        data={
+            'image': (io.BytesIO(b''.ljust(1024)), 'test.jpg'),
+        },
+        content_type='multipart/form-data',
+    )
+    assert rv.status_code == 200
+    assert rv.json == {'1 KiB': True}
+
+    rv = client.post(
+        '/',
+        data={
+            'image': (io.BytesIO(b''.ljust(1000)), 'test.jpg'),
+        },
+        content_type='multipart/form-data',
+    )
+
+    assert rv.status_code == 422
+    assert rv.json['detail']['files']['image'] == [
+        'Value error, Must be greater than or equal to 1 KiB.'
+    ]
