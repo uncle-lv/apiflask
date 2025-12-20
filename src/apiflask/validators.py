@@ -21,7 +21,7 @@ from werkzeug.datastructures import FileStorage
 
 
 def check_file_type(
-    accept: t.Iterable[str], error: str | None = None
+    accept: t.Iterable[str], error: t.Optional[str] = None
 ) -> t.Callable[[FileStorage], FileStorage]:
     """Validator which succeeds if the uploaded file is allowed by a given list
     of extensions.
@@ -34,6 +34,8 @@ def check_file_type(
     :param accept: A sequence of allowed extensions.
     :param error: Error message to raise in case of a validation error.
         Can be interpolated with ``{input}`` and ``{extensions}``.
+
+     *Version Added: 3.1.0*
     """
 
     default_message = 'Not an allowed file type. Allowed file types: [{extensions}]'
@@ -52,11 +54,11 @@ def check_file_type(
 
 
 def check_file_size(
-    min: str | None = None,
-    max: str | None = None,
+    min: t.Optional[str] = None,
+    max: t.Optional[str] = None,
     min_inclusive: bool = True,
     max_inclusive: bool = True,
-    error: str | None = None,
+    error: t.Optional[str] = None,
 ) -> t.Callable[[FileStorage], FileStorage]:
     """Validator which succeeds if the file passed to it is within the specified
     size range. If ``min`` is not specified, or is specified as `None`,
@@ -80,6 +82,8 @@ def check_file_size(
     :param max_inclusive: Whether the ``max`` bound is included in the range.
     :param error: Error message to raise in case of a validation error.
         Can be interpolated with `{input}`, `{min}` and `{max}`.
+
+     *Version Added: 3.1.0*
     """
 
     message_min_tpl = 'Must be {min_op} {{min}}.'
