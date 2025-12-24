@@ -131,6 +131,10 @@ class SchemaRegistry:
                 inner_schema = schema.__args__[0]
                 many = True
 
+        # For marshmallow's Schema(many=True)
+        if hasattr(schema, 'many'):
+            many = schema.many
+
         # Detect schema type from the inner schema
         if schema_type is None:
             schema_type = self.detect_schema_type(inner_schema)

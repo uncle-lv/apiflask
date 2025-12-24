@@ -1,3 +1,9 @@
+## Version 3.0.3
+
+Released: -
+
+- Fix `@app.output(Schema(many=True))` is not `array` type in OpenAPI doc ([issue #721][issue_721]).
+
 ## Version 3.0.2
 
 Released: 2025/11/20
