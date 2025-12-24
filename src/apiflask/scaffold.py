@@ -459,7 +459,10 @@ class APIScaffold:
                 f,
                 response={
                     'schema': body_schema,
-                    'schema_adapter_many': body_schema_adapter.many,  # Store the many flag
+                    'schema_adapter_many': body_schema_adapter.many
+                    or (
+                        body_schema.many if hasattr(body_schema, 'many') else False
+                    ),  # Store the many flag
                     'status_code': status_code,
                     'description': description,
                     'example': example,
