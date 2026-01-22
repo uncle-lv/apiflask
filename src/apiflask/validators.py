@@ -42,7 +42,7 @@ def check_file_type(
     allowed_types = {ext.lower() for ext in accept}
 
     def _format_error(value: FileStorage) -> str:
-        return (error or default_message).format(input=value, extensions=''.join(allowed_types))
+        return (error or default_message).format(input=value, extensions=','.join(allowed_types))
 
     def validator(value: FileStorage) -> FileStorage:
         _, extension = os.path.splitext(value.filename) if value.filename else (None, None)
