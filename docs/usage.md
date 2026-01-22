@@ -5,8 +5,8 @@ This chapter will cover the primary usage of APIFlask.
 
 ## Prerequisites
 
-- Python 3.8+
-- Flask 2.2+
+- Python 3.9+
+- Flask 2.1+
 
 You also need to know the basic of Flask. Here are some useful free resources
 to learn Flask:

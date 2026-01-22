@@ -1,3 +1,13 @@
+## Version: 3.1.0
+
+Released: -
+
+- Support pagination with Pydantic ([issue #702][issue_702]).
+- Fix `@app.output(Schema(many=True))` is not `array` type in OpenAPI doc ([issue #721][issue_721]).
+
+[issue_702]: https://github.com/apiflask/apiflask/issues/702
+[issue_721]: https://github.com/apiflask/apiflask/issues/721
+
 ## Version 3.0.2
 
 Released: 2025/11/20
