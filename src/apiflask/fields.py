@@ -56,34 +56,22 @@ class _FileTypeAnnotation:
     """
 
     @classmethod
+    def _validate(cls, __input_value: t.Any, _: t.Any) -> FileStorage:
+        if not isinstance(__input_value, FileStorage):
+            raise ValueError('Not a valid file.')
+        return __input_value
+
+    @classmethod
     def __get_pydantic_core_schema__(
         cls, _source_tpye: t.Any, _handler: t.Callable[[t.Any], core_schema.CoreSchema]
     ) -> core_schema.CoreSchema:
-        def validate_from_fs(value: FileStorage) -> FileStorage:
-            if isinstance(value, FileStorage):
-                return value
-            raise TypeError('Not a valid file.')
-
-        from_fs_schema = core_schema.chain_schema(
-            [
-                core_schema.any_schema(),
-                core_schema.no_info_plain_validator_function(validate_from_fs),
-            ]
-        )
-
-        return core_schema.json_or_python_schema(
-            json_schema=from_fs_schema, python_schema=core_schema.is_instance_schema(FileStorage)
-        )
+        return core_schema.with_info_plain_validator_function(cls._validate)
 
     @classmethod
     def __get_pydantic_json_schema__(
         cls, _core_schema: core_schema.CoreSchema, handler: GetJsonSchemaHandler
     ) -> JsonSchemaValue:
-        json_schema = handler(_core_schema)
-        json_schema = handler.resolve_ref_schema(json_schema)
-        json_schema['type'] = 'string'
-        json_schema['format'] = 'binary'
-        return json_schema
+        return {'type': 'string', 'format': 'binary'}
 
 
 UploadFile = Annotated[FileStorage, _FileTypeAnnotation]

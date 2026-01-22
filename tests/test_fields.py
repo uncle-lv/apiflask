@@ -179,7 +179,112 @@ def test_file_model(app, client):
         content_type='multipart/form-data',
     )
     assert rv.status_code == 422
-    assert rv.json['detail']['files']['image'] == ['Input should be an instance of FileStorage']
+    assert rv.json['detail']['files']['image'] == ['Value error, Not a valid file.']
+
+
+def test_file_model_in_location_form_and_files(app, client):
+    class Files(BaseModel):
+        image: UploadFile
+        description: str
+
+    @app.post('/')
+    @app.input(Files, location='form_and_files')
+    def index(form_and_files_data: Files):
+        data = {}
+        if 'image' in form_and_files_data.model_dump() and isinstance(
+            form_and_files_data.image, FileStorage
+        ):
+            data['image'] = True
+
+        data['description'] = form_and_files_data.description
+        return data
+
+    rv = client.post(
+        '/',
+        data={
+            'image': (io.BytesIO(b'test'), 'test.jpg'),
+            'description': 'This is a image.',
+        },
+        content_type='multipart/form-data',
+    )
+    assert rv.status_code == 200
+    assert rv.json == {'image': True, 'description': 'This is a image.'}
+
+
+def test_multiple_file_model(app, client):
+    class Files(BaseModel):
+        images: t.List[UploadFile]
+
+    @app.post('/')
+    @app.input(Files, location='files')
+    def index(files_data: Files):
+        data = {'images': True}
+        for f in files_data.images:
+            if not isinstance(f, FileStorage):
+                data['images'] = False
+        return data
+
+    rv = client.post(
+        '/',
+        data={
+            'images': [
+                (io.BytesIO(b'test0'), 'test0.jpg'),
+                (io.BytesIO(b'test1'), 'test1.jpg'),
+                (io.BytesIO(b'test2'), 'test2.jpg'),
+            ]
+        },
+        content_type='multipart/form-data',
+    )
+    assert rv.status_code == 200
+    assert rv.json == {'images': True}
+
+
+def test_empty_file_model(app, client):
+    class Files(BaseModel):
+        image: t.Optional[UploadFile] = None
+
+    @app.post('/')
+    @app.input(Files, location='files')
+    def index(files_data: Files):
+        data = {}
+        if 'image' in files_data.model_dump() and isinstance(files_data.image, FileStorage):
+            data['image'] = True
+        return data
+
+    rv = client.post(
+        '/',
+        data={
+            'image': '',
+        },
+        content_type='multipart/form-data',
+    )
+    assert rv.status_code == 200
+    assert rv.json == {}
+
+
+def test_empty_multiple_file_field(app, client):
+    class Files(BaseModel):
+        images: t.Optional[t.List[UploadFile]] = None
+
+    @app.post('/')
+    @app.input(Files, location='files')
+    def index(files_data: Files):
+        data = {'images': True}
+        if not files_data.images:
+            return {}
+
+        for f in files_data['images']:
+            if not isinstance(f, FileStorage):
+                data['images'] = False
+        return data
+
+    rv = client.post(
+        '/',
+        data={'images': 'null'},
+        content_type='multipart/form-data',
+    )
+    assert rv.status_code == 200
+    assert rv.json == {}
 
 
 def test_file_model_filetype_validator(app, client):
