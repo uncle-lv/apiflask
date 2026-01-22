@@ -1,7 +1,6 @@
 import os
 from typing import Annotated
 
-
 from werkzeug.utils import secure_filename
 from apiflask.fields import UploadFile
 from apiflask.validators import check_file_size
@@ -10,8 +9,8 @@ from apiflask import APIFlask
 from pydantic import AfterValidator
 from pydantic import BaseModel
 
-app = APIFlask(__name__)
 
+app = APIFlask(__name__)
 upload_dir = '../upload'
 
 
