@@ -131,8 +131,8 @@ def test_get_fields_by_type():
         file_list: t.List[UploadFile]
 
     class OptionalFiles(BaseModel):
-        single_file: t.Optional[UploadFile] | None = None
-        file_list: t.Optional[t.List[UploadFile]] | None = None
+        single_file: t.Optional[UploadFile] = None
+        file_list: t.Optional[t.List[UploadFile]] = None
 
     fs = FileStorage(io.BytesIO(b'test'), 'test.jpg')
     fs_list = [
