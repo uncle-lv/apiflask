@@ -3,8 +3,8 @@ from typing import Annotated
 
 from werkzeug.utils import secure_filename
 from apiflask.fields import UploadFile
-from apiflask.validators import check_file_size
-from apiflask.validators import check_file_type
+from apiflask.validators import validate_file_size
+from apiflask.validators import validate_file_type
 from apiflask import APIFlask
 from pydantic import AfterValidator
 from pydantic import BaseModel
@@ -17,8 +17,8 @@ upload_dir = '../upload'
 class Image(BaseModel):
     image: Annotated[
         UploadFile,
-        AfterValidator(check_file_type(['.png', '.jpg', '.jpeg', '.gif'])),
-        AfterValidator(check_file_size(max='5 MB')),
+        AfterValidator(validate_file_type(['.png', '.jpg', '.jpeg', '.gif'])),
+        AfterValidator(validate_file_size(max='5 MB')),
     ]
 
 
@@ -26,8 +26,8 @@ class ProfileIn(BaseModel):
     name: str
     avatar: Annotated[
         UploadFile,
-        AfterValidator(check_file_type(['.png', '.jpg', '.jpeg'])),
-        AfterValidator(check_file_size(max='2 MB')),
+        AfterValidator(validate_file_type(['.png', '.jpg', '.jpeg'])),
+        AfterValidator(validate_file_size(max='2 MB')),
     ]
 
 

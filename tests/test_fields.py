@@ -13,8 +13,8 @@ from .schemas import FilesList
 from apiflask import Schema
 from apiflask.fields import Config
 from apiflask.fields import UploadFile
-from apiflask.validators import check_file_size
-from apiflask.validators import check_file_type
+from apiflask.validators import validate_file_size
+from apiflask.validators import validate_file_type
 
 
 def test_file_field(app, client):
@@ -289,7 +289,7 @@ def test_empty_multiple_file_field(app, client):
 
 def test_file_model_filetype_validator(app, client):
     class Files(BaseModel):
-        image: t.Annotated[UploadFile, AfterValidator(check_file_type(['.png']))]
+        image: t.Annotated[UploadFile, AfterValidator(validate_file_type(['.png']))]
 
     @app.post('/')
     @app.input(Files, location='files')
@@ -325,7 +325,7 @@ def test_file_model_filetype_validator(app, client):
 
 def test_file_model_filesize_validator(app, client):
     class Files(BaseModel):
-        image: t.Annotated[UploadFile, AfterValidator(check_file_size(min='1 KiB'))]
+        image: t.Annotated[UploadFile, AfterValidator(validate_file_size(min='1 KiB'))]
 
     @app.post('/')
     @app.input(Files, location='files')

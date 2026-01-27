@@ -20,7 +20,7 @@ from marshmallow.validate import Validator as Validator
 from werkzeug.datastructures import FileStorage
 
 
-def check_file_type(
+def validate_file_type(
     accept: t.Iterable[str], error: t.Optional[str] = None
 ) -> t.Callable[[FileStorage], FileStorage]:
     """Validator which succeeds if the uploaded file is allowed by a given list
@@ -29,7 +29,7 @@ def check_file_type(
     Example: ::
 
         class UploadFileModel(BaseModel):
-            file: t.Annotated[UploadFile, AfterValidator(check_file_type(['.png']))]
+            file: t.Annotated[UploadFile, AfterValidator(validate_file_type(['.png']))]
 
     :param accept: A sequence of allowed extensions.
     :param error: Error message to raise in case of a validation error.
@@ -53,7 +53,7 @@ def check_file_type(
     return validator
 
 
-def check_file_size(
+def validate_file_size(
     min: t.Optional[str] = None,
     max: t.Optional[str] = None,
     min_inclusive: bool = True,
