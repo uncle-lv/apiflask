@@ -72,7 +72,10 @@ def validate_file_size(
     Example: ::
 
         class UploadFileModel(BaseModel):
-            file: t.Annotated[UploadFile, AfterValidator(check_file_size(min="1 KiB", max="2 KiB"))]
+            file: t.Annotated[
+                UploadFile,
+                AfterValidator(validate_file_size(min="1 KiB", max="2 KiB"))
+            ]
 
     :param min: The minimum size (lower bound). If not provided, minimum
         size will not be checked.

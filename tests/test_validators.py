@@ -11,7 +11,7 @@ from apiflask.validators import validate_file_size
 from apiflask.validators import validate_file_type
 
 
-def test_check_file_type():
+def test_validate_file_type():
     class PngUploadFileModel(BaseModel):
         file: t.Annotated[UploadFile, AfterValidator(validate_file_type(['.png']))]
 
@@ -35,7 +35,7 @@ def test_check_file_type():
         PngUploadFileModel(file=no_ext_fs)
 
 
-def test_check_file_size_min():
+def test_validate_file_size():
     class UploadFileModel1(BaseModel):
         file: t.Annotated[UploadFile, AfterValidator(validate_file_size())]
 
