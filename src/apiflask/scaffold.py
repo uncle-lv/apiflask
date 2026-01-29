@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import typing as t
 from functools import wraps
-from wsgiref.types import WSGIApplication
 
 from flask import current_app
 from flask import jsonify
@@ -25,6 +24,8 @@ from .types import SchemaType
 from .views import MethodView
 
 if t.TYPE_CHECKING:
+    from _typeshed.wsgi import WSGIApplication  # noqa: F401
+
     try:
         from flask_sqlalchemy import extension as sqla_ext  # type: ignore
     except ImportError:
