@@ -49,7 +49,7 @@ if t.TYPE_CHECKING:
         tuple[ResponseValue, HeadersValue],
         tuple[ResponseValue, int],
         tuple[ResponseValue, int, HeadersValue],
-        WSGIApplication,
+        'WSGIApplication',
     ]
 
     RouteCallable = t.Union[
